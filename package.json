@@ -1,5 +1,8 @@
 {
   "name": "clowai",
   "version": "3.0.0",
-  "private": true
+  "private": true,
+  "scripts": {
+    "build": "echo 'No build needed - Static files'"
+  }
 }
