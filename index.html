@@ -5,31 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ClowAI - AI System by Hemat</title>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
-  
-  const firebaseConfig = {
-    apiKey: "AIzaSyAcZetecRzDRuOHxsNge0uH770_HMpeY3M",
-    authDomain: "clowai1v.firebaseapp.com",
-    projectId: "clowai1v",
-    storageBucket: "clowai1v.firebasestorage.app",
-    messagingSenderId: "82096858124",
-    appId: "1:82096858124:web:f772392d6a335876867a29",
-    measurementId: "G-S8HWTYV5TS"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  window.firebaseAuth = getAuth(app);
-  window.firebaseDB = getFirestore(app);
-  
-  window.authFuncs = {
-    signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
-    onAuthStateChanged, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, updateProfile
-  };
-  window.firestoreFuncs = { doc, setDoc, getDoc, collection, getDocs, updateDoc, serverTimestamp, increment };
-</script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -38,13 +16,15 @@
 </head>
 <body class="light">
 
+<!-- AUTH SCREEN -->
 <div id="authScreen">
   <div class="auth-container">
     <div class="auth-box">
       <div class="auth-header">
-        <img src="https://i.postimg.cc/Wb8c2DFr/file-00000000974071f58a753a2f8b810e7c.png" alt="Logo">
+        <img src="https://i.postimg.cc/Wb8c2DFr/file-00000000974071f58a753a2f8b810e7c.png" alt="ClowAI Logo">
         <h1>Welcome to ClowAI</h1>
-        <p>Developed by Hemat</p>
+        <p>Developed by Hemat | AI Assistant</p>
+        <p id="authSubtitle">Sign in to continue</p>
       </div>
       
       <form id="loginForm" class="auth-form">
@@ -60,7 +40,7 @@
         <p class="toggle-text">No account? <span onclick="toggleAuth()">Sign Up</span></p>
         <div class="divider"><span>or</span></div>
         <button type="button" class="google-btn" onclick="googleSignIn()">
-          <i class="fab fa-google"></i> Google Sign In
+          <i class="fab fa-google"></i> Sign in with Google
         </button>
       </form>
 
@@ -83,20 +63,23 @@
       
       <div class="social-links">
         <a href="https://www.facebook.com/profile.php?id=61591053177770" target="_blank" class="fb-link">
-          <i class="fab fa-facebook"></i> Follow on Facebook
+          <i class="fab fa-facebook"></i> Follow us on Facebook
         </a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- MAIN APP -->
 <div id="mainApp" style="display:none;">
 
+  <!-- TOP BAR -->
   <div class="topbar">
     <button onclick="toggleSidebar()" class="menuBtn">☰</button>
     <div class="logo">
       <img src="https://i.postimg.cc/Wb8c2DFr/file-00000000974071f58a753a2f8b810e7c.png" alt="Logo">
       <span>ClowAI</span>
+      <small style="color:#667eea;font-size:10px;">by Hemat</small>
     </div>
     <div class="topbar-right">
       <button onclick="toggleTheme()" class="themeBtn">🌙</button>
@@ -112,21 +95,25 @@
     </div>
   </div>
 
+  <!-- SIDEBAR -->
   <div id="sidebarOverlay" onclick="toggleSidebar()"></div>
   <div id="sidebar">
     <div class="sidebar-header">
       <h3>Menu</h3>
       <button onclick="toggleSidebar()">✕</button>
     </div>
+    
     <div id="adminMenu" style="display:none;">
       <button class="menu-btn active-page" onclick="showPage('chat')"><i class="fas fa-robot"></i> AI Chat</button>
       <button class="menu-btn" onclick="showPage('data')"><i class="fas fa-database"></i> AI Data</button>
       <button class="menu-btn" onclick="showPage('admin')"><i class="fas fa-cogs"></i> Admin Panel</button>
     </div>
+    
     <div id="userMenu">
       <button class="menu-btn active-page" onclick="showPage('chat')"><i class="fas fa-robot"></i> AI Chat</button>
       <button class="menu-btn" onclick="showApiKeyModal()"><i class="fas fa-key"></i> API Key</button>
     </div>
+    
     <div class="sidebar-footer">
       <p>Developed by Hemat</p>
       <a href="https://www.facebook.com/profile.php?id=61591053177770" target="_blank" class="fb-link-sidebar">
@@ -136,16 +123,17 @@
     </div>
   </div>
 
+  <!-- PAGE: AI CHAT -->
   <div id="page-chat" class="page active">
     <div id="chatContainer">
       <div class="welcome-message">
         <img src="https://i.postimg.cc/Wb8c2DFr/file-00000000974071f58a753a2f8b810e7c.png" class="welcome-logo">
         <h2>ClowAI - Your AI Assistant</h2>
-        <p>Developed by Hemat</p>
+        <p>Developed by Hemat | Powered by Multiple AI Models</p>
         <div class="suggestions">
           <div class="suggestion-card" onclick="quickAsk('who is cat ?')"><i class="fas fa-cat"></i> who is cat ?</div>
           <div class="suggestion-card" onclick="quickAsk('Who made you?')"><i class="fas fa-user"></i> Who made you?</div>
-          <div class="suggestion-card" onclick="quickAsk('What is your name?')"><i class="fas fa-question"></i> What's your name?</div>
+          <div class="suggestion-card" onclick="quickAsk('What is your name?')"><i class="fas fa-question"></i> What is your name?</div>
           <div class="suggestion-card" onclick="quickAsk('Show me flowers')"><i class="fas fa-image"></i> Show images</div>
         </div>
       </div>
@@ -156,33 +144,38 @@
     </div>
   </div>
 
+  <!-- PAGE: AI DATA -->
   <div id="page-data" class="page">
     <div class="data-container">
       <h2><i class="fas fa-database"></i> AI Data Storage</h2>
       <div class="storage-grid">
         <div class="storage-card">
-          <i class="fas fa-memory"></i><h3>Memory (memory.js)</h3>
+          <i class="fas fa-memory"></i>
+          <h3>Memory (memory.js)</h3>
           <p id="memorySize">0 KB</p>
           <div class="bar"><div class="fill" id="memoryBar"></div></div>
         </div>
         <div class="storage-card">
-          <i class="fas fa-image"></i><h3>Photos (photo.js)</h3>
+          <i class="fas fa-image"></i>
+          <h3>Photos (photo.js)</h3>
           <p id="photoSize">0 KB</p>
           <div class="bar"><div class="fill" id="photoBar"></div></div>
         </div>
         <div class="storage-card">
-          <i class="fas fa-hdd"></i><h3>Total Storage</h3>
+          <i class="fas fa-hdd"></i>
+          <h3>Total Storage</h3>
           <p id="totalSize">0 KB</p>
           <div class="bar"><div class="fill" id="totalBar"></div></div>
         </div>
       </div>
       <table class="data-table">
-        <thead><tr><th>Type</th><th>Bytes</th><th>KB</th><th>MB</th></tr></thead>
+        <thead><tr><th>Type</th><th>Bytes</th><th>KB</th><th>MB</th><th>GB</th><th>TB</th></tr></thead>
         <tbody id="storageTable"></tbody>
       </table>
     </div>
   </div>
 
+  <!-- PAGE: ADMIN PANEL -->
   <div id="page-admin" class="page">
     <div class="admin-container">
       <h2><i class="fas fa-cogs"></i> Admin Panel - Hemat</h2>
@@ -194,7 +187,7 @@
       </div>
       <h3>Registered Users</h3>
       <table class="data-table">
-        <thead><tr><th>Email</th><th>Name</th><th>API Keys</th><th>Joined</th></tr></thead>
+        <thead><tr><th>Email</th><th>Name</th><th>API Keys</th><th>Joined Date</th></tr></thead>
         <tbody id="usersTable"></tbody>
       </table>
     </div>
@@ -202,29 +195,67 @@
 
 </div>
 
+<!-- API KEY MODAL -->
 <div id="apiKeyModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeApiKeyModal()">&times;</span>
     <h2><i class="fas fa-key"></i> Your API Key</h2>
+    <p style="color:#777;font-size:13px;">Use this key in Telegram Bot, Web Chat, or Python scripts</p>
     <div class="api-key-box">
-      <code id="apiKeyDisplay">No API Key</code>
+      <code id="apiKeyDisplay">No API Key generated</code>
       <button onclick="copyApiKey()"><i class="fas fa-copy"></i> Copy</button>
     </div>
     <button onclick="generateApiKey()" class="auth-btn" style="width:100%;margin-top:10px;">
-      <i class="fas fa-sync"></i> Generate New Key
+      <i class="fas fa-sync"></i> Generate New API Key
     </button>
+    
     <div class="api-info">
       <h4>Python Example:</h4>
       <pre><code>import requests
+
+# Your ClowAI API Key
 api_key = "CSK-XXXX...XXXX"
-headers = {"Authorization": f"Bearer {api_key}"}
-data = {"message": "Hello ClowAI"}
-response = requests.post("https://api.clowai.com/v1/chat", headers=headers, json=data)
+
+headers = {
+    "Authorization": f"Bearer {api_key}",
+    "Content-Type": "application/json"
+}
+
+data = {
+    "message": "Hello ClowAI!",
+    "model": "clowai-v1"
+}
+
+response = requests.post(
+    "https://api.clowai.com/v1/chat",
+    headers=headers,
+    json=data
+)
+
 print(response.json())</code></pre>
+
+      <h4>Telegram Bot Example:</h4>
+      <pre><code>import telebot
+import requests
+
+bot = telebot.TeleBot("YOUR_BOT_TOKEN")
+CLOWAI_API_KEY = "CSK-XXXX...XXXX"
+
+@bot.message_handler(func=lambda m: True)
+def handle_message(message):
+    response = requests.post(
+        "https://api.clowai.com/v1/chat",
+        headers={"Authorization": f"Bearer {CLOWAI_API_KEY}"},
+        json={"message": message.text}
+    )
+    bot.reply_to(message, response.json()["reply"])
+
+bot.polling()</code></pre>
     </div>
   </div>
 </div>
 
+<!-- TOAST -->
 <div id="toast" class="toast"></div>
 
 <script src="memory.js"></script>
